@@ -10,6 +10,7 @@
 #include <tuple>
 #include <sstream>
 #include <queue>
+#include <unordered_map>
 
 using namespace std;
 //*********************** typedefs *********************//
@@ -28,6 +29,12 @@ struct Edge
     int weight;
     Edge(int s, int d, int w): src(s), dst(d), weight(w) {}
 }; //struct Edge
+
+struct strNlen{
+    string str;
+    int len;
+    strNlen(string s, int l): str(s), len(l) {}
+};
 
 //*********************** Structures *********************//
 
@@ -162,6 +169,78 @@ class Matrix{
 
 };  //class Matrix
 
+class SubString
+{
+    string str;
+    strNlen *opStr;
+    public:
+    SubString(string s)
+    {
+        str = s;
+    }
+    string getStr (unordered_map<char, int> m)
+    {
+        string sub;
+        for (auto j = m.begin(); j!=m.end(); j++)
+        {
+            sub = sub + j->first;
+        }
+        return sub;
+    }
+
+    void displaySubStr()
+    {
+        opStr = subStringCheck();
+        cout<<"String = "<<str<<endl;
+        cout<<"longest unique subString = "<<opStr->str<<endl;
+        cout<<"length of subString = "<<opStr->len<<endl;
+    }
+
+    strNlen* subStringCheck()
+    {
+        unordered_map<char, int> map;
+        int length_substr= 0;
+        string sub_str;
+        char last;
+        
+        for(auto i:str)
+        {
+            if(map.find(i)!=map.end())
+            {
+                if(length_substr < int(map.size()) )
+                {
+                    length_substr = max(length_substr, int(map.size()) );
+                    sub_str = getStr(map);
+                }
+                if(last == i)
+                {
+                    map.clear();
+                }
+                if(!map.empty())
+                {
+                    map.erase(map.find(i));
+                }
+                map[i] = i;
+            }
+            else
+            {
+                map[i] = i;     
+            }
+
+            last = i;  
+
+        }
+        if(length_substr < int(map.size()))
+        {
+            length_substr = map.size();
+            sub_str = getStr(map);
+        }
+        strNlen * r = new strNlen(sub_str, length_substr);
+        return r;
+    }
+
+};
+
 
 //*********************** Classes *********************//
 
@@ -170,8 +249,12 @@ int main()
     // Graph test(5,8);
     // test.testBellmanFord();
 
-    Matrix m(4,4);
-    m.setRowsCols();
-    m.printarr();
+    // Matrix m(4,4);
+    // m.setRowsCols();
+    // m.printarr();
+
+    SubString s("abdabbdbaccekdlio");
+    // SubString s("01000");
+    s.displaySubStr();
     return 0;
 }
